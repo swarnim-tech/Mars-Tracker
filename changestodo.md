@@ -6,7 +6,7 @@
 - [ ] Create documentaion and update readme files. Make github better
 - [ ] Add more categories for sidebar for categories like country, mission type etc
 - [ ] Add collision warning section in bottom half of sidebar [if software thinks there will be collisions based on orbital paths] which will maintain a table of possible collisions and deorbits as the number of satellites expand.
-- [ ]if someone clicks on a satellite, it will move the cetre of focus to that satellite and create a descrption box that is connected to the satelellite dot. the box will show information such as mission data, country of origin, launch date etc. it will also highlight the satellite in side bar. if user clicks recentre button, camera will recentre to the mars planet.
+- [ ] if someone clicks on a satellite, it will move the cetre of focus to that satellite and create a descrption box that is connected to the satelellite dot. the box will show information such as mission data, country of origin, launch date etc. it will also highlight the satellite in side bar. if user clicks recentre button, camera will recentre to the mars planet.
 - [ ] need to expand so that it can hold info of all satellies in orbit (active or defunct) , currently there are 7 satellites in orbit but only 4 artificial satellites are present.
 - [ ] need to add a history timeline that is a button. once clicked it will open history mode and user can scroll a slider or enter a date to see satelites number andorbits over time. the layout and sidebar logic will stay the same, and once user exits the history mode then it will revert to original program.
 
