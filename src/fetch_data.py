@@ -3,58 +3,52 @@ import os
 from astroquery.jplhorizons import Horizons
 
 def fetch_mars_trajectories():
-    """
-    Fetches orbital position vectors for major Mars satellites and moons
-    from the NASA JPL Horizons system and exports them to a JSON file.
-    """
-    targets = {
-        "Mars Reconnaissance Orbiter": "-74",
-        "MAVEN": "-202",
-        "Mars Express": "-41",
-        "Phobos": "401", 
-        "Deimos": "402"
-    }
+    # Expanded target list with JPL IDs and Metadata
+    targets = [
+        {"name": "Mars Reconnaissance Orbiter", "id": "-74", "country": "USA", "type": "Orbiter"},
+        {"name": "MAVEN", "id": "-202", "country": "USA", "type": "Orbiter"},
+        {"name": "Mars Express", "id": "-41", "country": "ESA", "type": "Orbiter"},
+        {"name": "Trace Gas Orbiter", "id": "-142", "country": "ESA", "type": "Orbiter"},
+        {"name": "Hope (EMM)", "id": "-165", "country": "UAE", "type": "Orbiter"},
+        {"name": "Tianwen-1", "id": "-153", "country": "China", "type": "Orbiter"},
+        {"name": "Mangalyaan (MOM)", "id": "-143", "country": "India", "type": "Orbiter"},
+        {"name": "Phobos", "id": "401", "country": "Natural", "type": "Moon"},
+        {"name": "Deimos", "id": "402", "country": "Natural", "type": "Moon"}
+    ]
 
     mars_id = '499'
-    trajectories = {}
+    trajectories = []
 
-    print("Initiating connection to NASA JPL Horizons...")
+    # Higher point density (200 points) for smoother curves
+    time_spec = {'start': '2026-02-01', 'stop': '2026-02-02', 'step': '200'}
 
-    # Horizons requires a structured time dictionary to parse the TLIST properly
-    time_spec = {'start': '2026-02-01', 'stop': '2026-02-02', 'step': '1d'}
+    print("Connecting to NASA JPL Horizons...")
 
-    for name, obj_id in targets.items():
-        print(f"Fetching coordinates for {name}...")
-        
+    for target in targets:
+        print(f"Fetching {target['name']}...")
         try:
-            # Query the Horizons API relative to the center of Mars (@499)
-            obj = Horizons(id=obj_id, location='@' + mars_id, epochs=time_spec)
+            obj = Horizons(id=target['id'], location='@' + mars_id, epochs=time_spec)
             vec = obj.vectors()
             
-            # Extract the X, Y, and Z coordinates for the start date
-            trajectories[name] = {
-                "x": float(vec['x'][0]),
-                "y": float(vec['y'][0]),
-                "z": float(vec['z'][0])
-            }
+            points = []
+            for i in range(len(vec)):
+                points.append([
+                    float(vec['x'][i]),
+                    float(vec['y'][i]),
+                    float(vec['z'][i])
+                ])
+            
+            trajectories.append({
+                "metadata": target,
+                "points": points
+            })
         except Exception as e:
-            # Prevent the entire script from failing if one query fails
-            print(f"Warning: Could not fetch data for {name}. Error: {e}")
+            print(f"Warning: Failed to fetch {target['name']}: {e}")
 
-    # Ensure the output directory exists before writing
-    output_dir = "public"
-    os.makedirs(output_dir, exist_ok=True)
-    
-    output_file = os.path.join(output_dir, "trajectories.json")
-
-    try:
-        with open(output_file, "w") as json_file:
-            json.dump(trajectories, json_file, indent=4)
-        print(f"\nSuccess! All coordinates saved to {output_file}")
-    except IOError as e:
-        print(f"\nError: Could not write to file. {e}")
+    output_file = "public/trajectories.json"
+    with open(output_file, "w") as f:
+        json.dump(trajectories, f, indent=4)
+    print(f"Success: {len(trajectories)} trajectories saved.")
 
 if __name__ == "__main__":
     fetch_mars_trajectories()
-
-    
